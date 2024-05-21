@@ -1714,7 +1714,7 @@ const CoinsDetailSkeleton = () => {
                 <Skeleton className="h-8 lg:h-6 w-full rounded-lg" />
                 <Skeleton className="h-8 lg:h-6 w-1/2 rounded-lg" />
                 <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
-                <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
+                <Skeleton className="h-8 w-2/3 rounded-lg" />
             </div>
         </div>
     </>)
@@ -1724,8 +1724,8 @@ const CoinsDetailsPage = () => {
     const { coinsData, isFetching } = useCoinsDetail()
 
     return (
-        <div className="grid grid-cols-12 h-full px-8 lg:px-12 pt-[1rem] lg:pt-[6.8rem]">
-            {!isFetching && coinsData ? (<><div className='col-span-12 lg:col-span-4 lg:border-r'>
+        <div className="grid grid-cols-12 px-8 lg:px-12">
+            {!isFetching && coinsData ? (<><div className='col-span-12 lg:px-4 lg:col-span-4 lg:border-r'>
                 <div className='space-x-2 border-b py-4 flex items-center'>
                     <div className='my-auto inline-block'>
                         <Image src={coinsData?.image?.large as string} height={50} width={50} quality={100} alt={coinsData?.name as string} />
@@ -1808,10 +1808,29 @@ const CoinsDetailsPage = () => {
                             Website
                         </span>
                         <span className='inline-block space-x-2'>
-                            <Link href={coinsData?.links?.homepage[0] as string} className={badgeVariants({ variant: "secondary" })}>
-                                {`bitcoin.org`}
-                            </Link>
-                            <Link href={coinsData?.links.whitepaper as string} className={badgeVariants({ variant: "secondary" })}>
+                            {coinsData?.links?.homepage?.length > 0 &&
+                                coinsData.links.homepage?.map((site: string, index: number) => {
+                                    const extractDomain = (url?: string) => {
+                                        try {
+                                            const hostname = new URL(url as string).hostname;
+                                            const domain = hostname.split('.').slice(-2, -1)[0];
+                                            return domain;
+                                        } catch (error) {
+                                            return null;
+                                        }
+                                    };
+                                    if (!site) return null;
+                                    const domain = extractDomain(site);
+                                    return (
+                                        <Link href={site} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
+                                            <span className="capitalize">
+                                                {domain}
+                                            </span>
+                                        </Link>
+                                    );
+                                })
+                            }
+                            <Link href={coinsData?.links.whitepaper as string} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
                                 Whitepaper
                             </Link>
                         </span>
@@ -1836,7 +1855,7 @@ const CoinsDetailsPage = () => {
                                         if (!site) return null;
                                         const domain = extractDomain(site);
                                         return (
-                                            <Link href={site} key={index} className={badgeVariants({ variant: "secondary" })}>
+                                            <Link href={site} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
                                                 <span className="capitalize">
                                                     {domain}
                                                 </span>
@@ -1875,7 +1894,7 @@ const CoinsDetailsPage = () => {
                                         if (!url) return null;
                                         const domain = extractDomain(url);
                                         return (
-                                            <Link href={url} key={index} className={badgeVariants({ variant: "secondary" })}>
+                                            <Link href={url} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
                                                 <span className="capitalize">
                                                     {domain}
                                                 </span>
@@ -1888,7 +1907,7 @@ const CoinsDetailsPage = () => {
                     </Accordion>
                 </div>
             </div>
-                <div className='col-span-12 lg:col-span-8 lg:px-6 lg:py-4 link'>
+                <div className='col-span-12 lg:col-span-8 lg:px-6 py-6 lg:py-4 link'>
                     <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 capitalize">
                         {`About ${coinsData?.name}?`}
                     </h2>
