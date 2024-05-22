@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Crypto Checker",
   description: "Browse trends, and latest prices on your cryptocurrencies.",
   icons: {
-    icon: "/public/crypto-checker-logo.png"
+    icon: "/crypto-checker-logo.png"
   }
 };
 
