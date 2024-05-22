@@ -14,6 +14,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Crypto Checker",
   description: "Browse trends, and latest prices on your cryptocurrencies.",
+  icons: {
+    icon: "/public/crypto-checker-logo.png"
+  }
 };
 
 export default function RootLayout({
