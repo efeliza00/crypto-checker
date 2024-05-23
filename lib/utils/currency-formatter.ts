@@ -1,6 +1,6 @@
 export const currencyFormatter =
   (
-    value: number
+    value?: number
   ): string => {
     return new Intl.NumberFormat(
       "en-US",
@@ -11,6 +11,6 @@ export const currencyFormatter =
           "USD"
       }
     ).format(
-      value
+      value as number
     );
   };

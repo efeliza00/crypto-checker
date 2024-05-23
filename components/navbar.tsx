@@ -28,7 +28,7 @@ const Navbar = () => {
 
     return (
         <div className="z-50 bg-primary-foreground px-8 lg:px-12 py-6 flex items-center justify-end md:justify-end lg:justify-between border-y border-accent w-full">
-            <Link href="/" target="_blank" rel="noopener noreferrer" className='hidden md:hidden lg:block'>
+            <Link href="/" className='hidden md:hidden lg:block'>
                 <div className='rounded-xl border border-accent p-4 hover:bg-accent duration-300 cursor-pointer'><span className="text-lg text-primary font-semibold">CryptoChecker</span></div>
             </Link>
             <ul className='items-center justify-center gap-4 hidden md:hidden lg:flex'>
