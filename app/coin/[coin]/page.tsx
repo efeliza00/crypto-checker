@@ -1811,7 +1811,7 @@ const CoinsDetailsPage = () => {
                             <span>
                                 Website
                             </span>
-                            <span className='inline-block space-x-2'>
+                            <span className='inline-block space-x-1 space-y-1'>
                                 {coinsData?.links?.homepage?.length > 0 &&
                                     coinsData.links.homepage?.map((site: string, index: number) => {
                                         const extractDomain = (url?: string) => {
@@ -1912,9 +1912,8 @@ const CoinsDetailsPage = () => {
                     </div>
                 </div>
                 <div className='col-span-12 lg:col-span-8 lg:px-6 py-6 lg:py-4 link'>
-                    <div className="col-span-12">
+                    <div className="col-span-12 mb-10">
                         <CurrencyChart sparkline={coinsData.market_data?.sparkline_7d} priceChange={coinsData.market_data?.price_change_percentage_7d_in_currency?.usd} />
-
                     </div>
                     <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 capitalize">
                         {`About ${coinsData?.name}?`}

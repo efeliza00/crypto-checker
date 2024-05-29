@@ -16,6 +16,15 @@ export const options = {
     responsive: true,
     aspectRatio: 1.5,
     scales: {
+        x: {
+            display: false,
+            ticks: {
+                display: false
+            },
+            grid: {
+                display: false
+            }
+        },
         y: {
             grid: {
                 color: 'hsl(199 73% 50%)',
@@ -44,6 +53,7 @@ const CurrencyChart = ({ sparkline, priceChange }: {
         labels: sparkline.price.map((_, index) => index),
         datasets: [
             {
+                label: '7 day change',
                 data: sparkline.price,
                 borderColor: priceChange < 0 ? 'rgb(204,0,0)' : 'rgb(34,204,0)',
                 tension: 0.1,
