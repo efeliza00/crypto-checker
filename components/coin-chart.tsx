@@ -1,51 +1,71 @@
-"use client"
+import React from 'react';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Tooltip,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(LineElement, Tooltip, CategoryScale, LinearScale, PointElement);
 
 
-import React, { useState } from 'react';
-import dynamic from "next/dynamic";
-const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
+export const options = {
+    responsive: true,
+    aspectRatio: 4,
+    scales: {
+        x: {
+            display: false,
+            ticks: {
+                display: false
+            },
+            grid: {
+                display: false
+            }
+        },
+        y: {
+            display: false,
+            ticks: {
+                display: false
+            },
+            grid: {
+                display: false
+            }
+        },
+    },
+    scaleShowLabels: false,
+    plugins: {
+        title: {
+            display: false,
+            text: '7 day Chart',
+        },
+        tooltip: {
+            enabled: false,
+        },
+    },
+};
 
-
-const CoinSparklineChart = ({ sparkline, priceChange }: {
+const CoinChart = ({ sparkline, priceChange }: {
     sparkline: {
         price: number[];
     },
     priceChange: number;
 }) => {
-    const chartColor = () => {
-        return priceChange <= 0 ? "#ff3131" : "#25df3e";
-    };
-
-    const [chartOptions] = useState({
-        series: [
+    const data = {
+        labels: sparkline.price.map((_, index) => index),
+        datasets: [
             {
-                data: sparkline?.price,
+                data: sparkline.price,
+                borderColor: priceChange < 0 ? 'rgb(204,0,0)' : 'rgb(34,204,0)',
+                tension: 0,
+                pointRadius: 0
             },
         ],
-        chart: {
-            height: 10,
-            sparkline: { enabled: true },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        tooltip: { enabled: false },
-        stroke: { width: 1 },
-        colors: [chartColor],
-        yaxis: {
-        },
-    });
+    };
 
-
-    return (
-        <ReactApexChart
-            options={chartOptions}
-            series={chartOptions.series}
-            className="chart"
-            width={"100%"}
-            height={10}
-        />
-    );
+    return <Line options={options} data={data} />;
 };
 
-export default CoinSparklineChart;
+export default CoinChart;

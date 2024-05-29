@@ -48,13 +48,13 @@ type CoinData = {
 }
 const CoinstTableSkeleton = () => {
     const skeletonRows = new Array(3).fill(null);
-    const skeletonCells = new Array(8).fill(null);
+    const skeletonCells = new Array(9).fill(null);
     return (<>
         {skeletonRows.map((_, rowIndex) => (
             <TableRow key={rowIndex}>
                 {skeletonCells.map((_, cellIndex) => (
                     <TableCell key={cellIndex}>
-                        <Skeleton className="h-4 w-full rounded-xl" />
+                        <Skeleton className="h-8 w-full rounded-xl" />
                     </TableCell>
                 ))}
             </TableRow>
@@ -92,21 +92,23 @@ const CoinsTable = () => {
                     <TableHead>24hr</TableHead>
                     <TableHead>24hr Volume</TableHead>
                     <TableHead>Market Cap</TableHead>
-                    {/* <TableHead>Last 7 Days</TableHead> */}
+                    <TableHead>Last 7 Days</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {!isFetching ? (coinsData?.map((coin: CoinData) => {
                     return (<TableRow key={coin?.id} >
                         <TableCell>{coin?.market_cap_rank}</TableCell>
-                        <TableCell className='flex items-center'>
-                            <span className='h-8 w-8 mr-4'>
-                                <Image src={coin?.image} alt={coin?.name} width={50} height={50} />
-                            </span>
-                            <Link href={`coin/${coin?.id}`}>
-                                <span className="hover:text-primary hover:underline hover:underline-offset-4">{coin?.name}</span>
-                            </Link>
-                            <span className='ml-1 uppercase text-xs text-primary'>{coin?.symbol}</span>
+                        <TableCell>
+                            <div className="flex items-center">
+                                <span className='h-8 w-8 mr-4'>
+                                    <Image src={coin?.image} alt={coin?.name} width={50} height={50} />
+                                </span>
+                                <Link href={`coin/${coin?.id}`}>
+                                    <span className="hover:text-primary hover:underline hover:underline-offset-4">{coin?.name}</span>
+                                </Link>
+                                <span className='ml-1 uppercase text-xs text-primary'>{coin?.symbol}</span>
+                            </div>
                         </TableCell>
                         <TableCell>{currencyFormatter(coin?.current_price)}</TableCell>
                         <TableCell><span className={`${coin?.price_change_percentage_1h_in_currency > 0 ? 'text-green-500' : 'text-destructive'}`}>
@@ -120,9 +122,9 @@ const CoinsTable = () => {
                         </span></TableCell>
                         <TableCell>{currencyFormatter(coin?.total_volume)}</TableCell>
                         <TableCell>{currencyFormatter(coin?.market_cap)}</TableCell>
-                        {/* <TableCell>
-        <CoinSparklineChart sparkline={coin?.sparkline_in_7d} priceChange={coin?.price_change_percentage_7d_in_currency} />
-    </TableCell> */}
+                        <TableCell>
+                            <CoinSparklineChart sparkline={coin?.sparkline_in_7d} priceChange={coin?.price_change_percentage_7d_in_currency} />
+                        </TableCell>
                     </TableRow>)
                 })) : (<CoinstTableSkeleton />)}
             </TableBody>
