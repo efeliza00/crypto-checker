@@ -122,7 +122,7 @@ const CoinsTable = () => {
                         </span></TableCell>
                         <TableCell>{currencyFormatter(coin?.total_volume)}</TableCell>
                         <TableCell>{currencyFormatter(coin?.market_cap)}</TableCell>
-                        <TableCell>
+                        <TableCell className='max-w-52'>
                             <CoinSparklineChart sparkline={coin?.sparkline_in_7d} priceChange={coin?.price_change_percentage_7d_in_currency} />
                         </TableCell>
                     </TableRow>)

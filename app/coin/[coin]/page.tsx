@@ -5,9 +5,9 @@ import { getCoinData } from '@/api/coins'
 import { Badge, badgeVariants } from '@/components/ui/badge'
 import { currencyFormatter } from '@/lib/utils/currency-formatter'
 import { numberRounderFormatter } from '@/lib/utils/number-rounder-formatter'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { numberFormatter } from '@/lib/utils/number-formatter'
 import Link from 'next/link'
@@ -1683,8 +1683,14 @@ type CoinData = {
 }
 
 const useCoinsDetail = () => {
+    const queryClient = useQueryClient()
     const { coin } = useParams<{ coin: string }>()
-    const { data: coinsData, isFetching } = useQuery<CoinData>({ queryKey: ["coins-info"], queryFn: () => getCoinData(coin), enabled: !!coin })
+    const { data: coinsData, isFetching } = useQuery<CoinData>({ queryKey: ["coin-info"], queryFn: () => getCoinData(coin), enabled: !!coin, gcTime: 0 })
+
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ["coin-info"] })
+    }, [coin, queryClient])
+
 
     return {
         isFetching,
@@ -1710,12 +1716,12 @@ const CoinsDetailSkeleton = () => {
 
         </div>
         <div className='col-span-12 lg:col-span-8 px-6 py-4'>
-            <Skeleton className="h-10 w-1/5 rounded-lg scroll-m-20 first:mt-0" />
+            <Skeleton className="h-8 w-1/5 rounded-lg scroll-m-20 first:mt-0" />
             <div className="leading-7 space-y-4 [&:not(:first-child)]:mt-4">
                 <Skeleton className="h-8 lg:h-6 w-full rounded-lg" />
                 <Skeleton className="h-8 lg:h-6 w-1/2 rounded-lg" />
                 <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
-                <Skeleton className="h-8 w-2/3 rounded-lg" />
+                <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
             </div>
         </div>
     </>)
@@ -1723,8 +1729,6 @@ const CoinsDetailSkeleton = () => {
 
 const CoinsDetailsPage = () => {
     const { coinsData, isFetching } = useCoinsDetail()
-
-    console.log(coinsData)
 
     return (
         <div className="grid grid-cols-12 px-8 lg:px-12">
