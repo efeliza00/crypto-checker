@@ -1,12 +1,9 @@
-"use client"
-
 import { getGlobalMarket, getTrendingCoins } from '@/api/coins'
 import CoinsTable from '@/components/coins-table'
 import GlobalSearchInputDetail from '@/components/global-search-input'
 import MarketCapCard from '@/components/market-cap-card'
 import TradingVolumeCard from '@/components/trading-volume-card'
 import TrendingCard from '@/components/trending-card'
-import { useSuspenseQuery } from '@tanstack/react-query'
 
 
 const CrytoCurrencyTableDetails = () => {
@@ -30,9 +27,10 @@ const CrytoCurrencyTableDetails = () => {
   </div>
 }
 
-const TrendsDetails = () => {
-  const { data: trendingCoins } = useSuspenseQuery({ queryKey: ["trending-coins"], queryFn: getTrendingCoins })
-  const { data: globalMarketPrice } = useSuspenseQuery({ queryKey: ["global-market"], queryFn: getGlobalMarket })
+const TrendsDetails = async () => {
+  const trendingCoins = await getTrendingCoins()
+  const globalMarketPrice = await getGlobalMarket()
+
 
   return <div className='grid grid-cols-1 lg:grid-cols-12 grid-rows-12 my-10 gap-2'>
     <div className="lg:col-span-5 row-span-12">
@@ -46,6 +44,7 @@ const TrendsDetails = () => {
     </div>
   </div>
 }
+
 
 const Home = () => {
   return (
