@@ -5,7 +5,7 @@ import React from 'react'
 const Loading = () => {
     const skeletonInfo = new Array(4).fill(null);
     return (<div className="grid grid-cols-12 ">
-        <div className="lg:col-span-4 px-6 border-r py-2">
+        <div className="col-span-12 lg:col-span-4 px-6 border-r py-2">
             <div className='space-y-2 border-b py-4 flex items-center gap-4'>
                 <Skeleton className="h-20 min-w-20 rounded-full" />
                 <Skeleton className="h-6 w-full inline-block rounded-xl" />
