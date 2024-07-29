@@ -6,8 +6,6 @@ import { useQuery } from '@tanstack/react-query'
 import { getSearchCoins } from '@/api/coins'
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import Image from 'next/image'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { Select, SelectContent, SelectItem } from './ui/select'
 import { Button } from './ui/button'
 import Link from 'next/link'
 

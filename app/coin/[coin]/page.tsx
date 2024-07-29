@@ -1,18 +1,14 @@
-"use client"
-
 import Image from 'next/image'
 import { getCoinData } from '@/api/coins'
 import { Badge, badgeVariants } from '@/components/ui/badge'
 import { currencyFormatter } from '@/lib/utils/currency-formatter'
 import { numberRounderFormatter } from '@/lib/utils/number-rounder-formatter'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { numberFormatter } from '@/lib/utils/number-formatter'
 import Link from 'next/link'
-import { Skeleton } from '@/components/ui/skeleton'
 import CurrencyChart from '@/components/currency-chart'
+import NoData from '@/components/empty-data'
 
 
 type CoinData = {
@@ -1682,142 +1678,134 @@ type CoinData = {
     }[]
 }
 
-const useCoinsDetail = () => {
-    const queryClient = useQueryClient()
-    const { coin } = useParams<{ coin: string }>()
-    const { data: coinsData, isFetching } = useQuery<CoinData>({ queryKey: ["coin-info"], queryFn: () => getCoinData(coin), enabled: !!coin, gcTime: 0 })
+const CoinsDetailsPage = async ({
+    params: { coin },
+}: {
+    params: { coin: string }
+}) => {
+    const coinsData = await getCoinData(coin)
 
-    useEffect(() => {
-        queryClient.invalidateQueries({ queryKey: ["coin-info"] })
-    }, [coin, queryClient])
-
-
-    return {
-        isFetching,
-        coinsData
-    }
-}
-
-const CoinsDetailSkeleton = () => {
-    const skeletonInfo = new Array(4).fill(null);
-    return (<>
-        <div className='col-span-12 lg:col-span-4 px-6 border-r'>
-            <div className='space-y-2 border-b py-4 flex items-center gap-4'>
-                <Skeleton className="h-20 min-w-20 rounded-full" />
-                <Skeleton className="h-6 w-full inline-block" />
-            </div>
-            <div className='space-y-4 py-4'>
-                {skeletonInfo.map((_, index) => (
-                    <div key={index} className="flex justify-between py-2">
-                        <Skeleton className="h-10 w-full rounded-lg" />
-                    </div>
-                ))}
-            </div>
-
-        </div>
-        <div className='col-span-12 lg:col-span-8 px-6 py-4'>
-            <Skeleton className="h-8 w-1/5 rounded-lg scroll-m-20 first:mt-0" />
-            <div className="leading-7 space-y-4 [&:not(:first-child)]:mt-4">
-                <Skeleton className="h-8 lg:h-6 w-full rounded-lg" />
-                <Skeleton className="h-8 lg:h-6 w-1/2 rounded-lg" />
-                <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
-                <Skeleton className="h-8 lg:h-6 w-2/3 rounded-lg" />
-            </div>
-        </div>
-    </>)
-}
-
-const CoinsDetailsPage = () => {
-    const { coinsData, isFetching } = useCoinsDetail()
 
     return (
         <div className="grid grid-cols-12 px-8 lg:px-12">
-            {!isFetching && coinsData ? (<>
-                <div className='col-span-12 lg:px-4 lg:col-span-4 lg:border-r'>
-                    <div className='space-x-2 border-b py-4 flex items-center'>
-                        <div className='my-auto inline-block'>
-                            <Image src={coinsData?.image?.large as string} height={50} width={50} quality={100} alt={coinsData?.name as string} />
-                        </div>
-                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight inline-block ">
-                            {coinsData?.name}
-                        </h3>
-                        <span className="uppercase text-primary">{coinsData?.symbol} <span className="capitalize text-secondary-foreground">Price</span></span>
-                        <Badge variant="secondary">{`#${coinsData?.market_cap_rank}`}</Badge>
+            <div className='col-span-12 lg:px-4 lg:col-span-4 lg:border-r'>
+                <div className='space-x-2 border-b py-4 flex items-center'>
+                    <div className='my-auto inline-block'>
+                        <Image src={coinsData?.image?.large as string} height={50} width={50} quality={100} alt={coinsData?.name as string} />
                     </div>
-                    <div className="mt-5 w-full flex gap-4 items-baseline ">
-                        <h1 className="inline-block scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-5xl">
-                            {currencyFormatter(coinsData?.market_data?.current_price?.usd)}
-                        </h1>
-                        <h3 className={`scroll-m-20 text-2xl tracking-tight ${coinsData?.market_data?.price_change_24h as number > 0 ? 'text-green-500' : 'text-destructive'}`}>
-                            {`${numberRounderFormatter(coinsData?.market_data?.price_change_percentage_24h
-                            )}%`}
-                        </h3>
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight inline-block ">
+                        {coinsData?.name}
+                    </h3>
+                    <span className="uppercase text-primary">{coinsData?.symbol} <span className="capitalize text-secondary-foreground">Price</span></span>
+                    <Badge variant="secondary">{`#${coinsData?.market_cap_rank}`}</Badge>
+                </div>
+                <div className="mt-5 w-full flex gap-4 items-baseline ">
+                    <h1 className="inline-block scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-5xl">
+                        {currencyFormatter(coinsData?.market_data?.current_price?.usd)}
+                    </h1>
+                    <h3 className={`scroll-m-20 text-2xl tracking-tight ${coinsData?.market_data?.price_change_24h as number > 0 ? 'text-green-500' : 'text-destructive'}`}>
+                        {`${numberRounderFormatter(coinsData?.market_data?.price_change_percentage_24h
+                        )}%`}
+                    </h3>
+                </div>
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="market-cap">
+                        <AccordionTrigger className="flex justify-between">
+                            <span>Market Cap</span>
+                            <span>{currencyFormatter(coinsData?.market_data.market_cap?.usd)}</span>
+                        </AccordionTrigger>
+                        <AccordionContent className='flex justify-between'>
+                            <span>Market Cap/FDV</span>
+                            <span>{coinsData?.market_data?.market_cap_fdv_ratio}</span>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                <div className='divide-y'>
+                    <div className="flex justify-between py-4">
+                        <span className='text-sm'>
+                            Fully Diluted Valuation
+                        </span>
+                        <span>
+                            {currencyFormatter(coinsData?.market_data?.fully_diluted_valuation?.usd)}
+                        </span>
                     </div>
-                    <Accordion type="single" collapsible>
-                        <AccordionItem value="market-cap">
-                            <AccordionTrigger className="flex justify-between">
-                                <span>Market Cap</span>
-                                <span>{currencyFormatter(coinsData?.market_data.market_cap?.usd)}</span>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            24 Hour Trading Vol
+                        </span>
+                        <span>
+                            {currencyFormatter(coinsData?.market_data?.total_volume?.usd)}
+                        </span>
+                    </div>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            Circulating Supply
+                        </span>
+                        <span>
+                            {numberFormatter(coinsData?.market_data?.circulating_supply)}
+                        </span>
+                    </div>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            Total Supply
+                        </span>
+                        <span>
+                            {numberFormatter(coinsData?.market_data?.total_supply)}
+                        </span>
+                    </div>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            Max Supply
+                        </span>
+                        <span>
+                            {numberFormatter(coinsData?.market_data?.max_supply)}
+                        </span>
+                    </div>
+                </div>
+                <div className='divide-y mt-10'>
+                    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                        Coin Information
+                    </h4>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            Website
+                        </span>
+                        <span className='inline-block space-x-1 space-y-1'>
+                            {coinsData?.links?.homepage?.length > 0 &&
+                                coinsData.links.homepage?.map((site: string, index: number) => {
+                                    const extractDomain = (url?: string) => {
+                                        try {
+                                            const hostname = new URL(url as string).hostname;
+                                            const domain = hostname.split('.').slice(-2, -1)[0];
+                                            return domain;
+                                        } catch (error) {
+                                            return null;
+                                        }
+                                    };
+                                    if (!site) return null;
+                                    const domain = extractDomain(site);
+                                    return (
+                                        <Link href={site} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
+                                            <span className="capitalize">
+                                                {domain}
+                                            </span>
+                                        </Link>
+                                    );
+                                })
+                            }
+                            <Link href={coinsData?.links.whitepaper as string} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
+                                Whitepaper
+                            </Link>
+                        </span>
+                    </div>
+                    <Accordion type="single" collapsible className="py-4">
+                        <AccordionItem value="market-cap" className="!border-b-0">
+                            <AccordionTrigger>
+                                <span>Explorer</span>
                             </AccordionTrigger>
-                            <AccordionContent className='flex justify-between'>
-                                <span>Market Cap/FDV</span>
-                                <span>{coinsData?.market_data?.market_cap_fdv_ratio}</span>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                    <div className='divide-y'>
-                        <div className="flex justify-between py-4">
-                            <span className='text-sm'>
-                                Fully Diluted Valuation
-                            </span>
-                            <span>
-                                {currencyFormatter(coinsData?.market_data?.fully_diluted_valuation?.usd)}
-                            </span>
-                        </div>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                24 Hour Trading Vol
-                            </span>
-                            <span>
-                                {currencyFormatter(coinsData?.market_data?.total_volume?.usd)}
-                            </span>
-                        </div>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                Circulating Supply
-                            </span>
-                            <span>
-                                {numberFormatter(coinsData?.market_data?.circulating_supply)}
-                            </span>
-                        </div>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                Total Supply
-                            </span>
-                            <span>
-                                {numberFormatter(coinsData?.market_data?.total_supply)}
-                            </span>
-                        </div>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                Max Supply
-                            </span>
-                            <span>
-                                {numberFormatter(coinsData?.market_data?.max_supply)}
-                            </span>
-                        </div>
-                    </div>
-                    <div className='divide-y mt-10'>
-                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                            Coin Information
-                        </h4>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                Website
-                            </span>
-                            <span className='inline-block space-x-1 space-y-1'>
-                                {coinsData?.links?.homepage?.length > 0 &&
-                                    coinsData.links.homepage?.map((site: string, index: number) => {
+                            <AccordionContent className="space-x-1 space-y-1">
+                                {coinsData?.links?.blockchain_site?.length > 0 &&
+                                    coinsData.links.blockchain_site.map((site: string, index: number) => {
                                         const extractDomain = (url?: string) => {
                                             try {
                                                 const hostname = new URL(url as string).hostname;
@@ -1838,94 +1826,67 @@ const CoinsDetailsPage = () => {
                                         );
                                     })
                                 }
-                                <Link href={coinsData?.links.whitepaper as string} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
-                                    Whitepaper
-                                </Link>
-                            </span>
-                        </div>
-                        <Accordion type="single" collapsible className="py-4">
-                            <AccordionItem value="market-cap" className="!border-b-0">
-                                <AccordionTrigger>
-                                    <span>Explorer</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="space-x-1 space-y-1">
-                                    {coinsData?.links?.blockchain_site?.length > 0 &&
-                                        coinsData.links.blockchain_site.map((site: string, index: number) => {
-                                            const extractDomain = (url?: string) => {
-                                                try {
-                                                    const hostname = new URL(url as string).hostname;
-                                                    const domain = hostname.split('.').slice(-2, -1)[0];
-                                                    return domain;
-                                                } catch (error) {
-                                                    return null;
-                                                }
-                                            };
-                                            if (!site) return null;
-                                            const domain = extractDomain(site);
-                                            return (
-                                                <Link href={site} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
-                                                    <span className="capitalize">
-                                                        {domain}
-                                                    </span>
-                                                </Link>
-                                            );
-                                        })
-                                    }
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                        <div className="flex justify-between py-4">
-                            <span>
-                                Circulating Supply
-                            </span>
-                            <span>
-                                {numberFormatter(coinsData?.market_data?.circulating_supply as number)}
-                            </span>
-                        </div>
-                        <Accordion type="single" collapsible className="py-4">
-                            <AccordionItem value="Community" className="!border-b-0">
-                                <AccordionTrigger>
-                                    <span>Source Code</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="space-x-1 space-y-1">
-                                    {coinsData?.links?.repos_url?.github.length > 0 &&
-                                        coinsData.links.repos_url?.github.map((url: string, index: number) => {
-                                            const extractDomain = (url?: string) => {
-                                                try {
-                                                    const hostname = new URL(url as string).hostname;
-                                                    const domain = hostname.split('.').slice(-2, -1)[0];
-                                                    return domain;
-                                                } catch (error) {
-                                                    return null;
-                                                }
-                                            };
-                                            if (!url) return null;
-                                            const domain = extractDomain(url);
-                                            return (
-                                                <Link href={url} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
-                                                    <span className="capitalize">
-                                                        {domain}
-                                                    </span>
-                                                </Link>
-                                            );
-                                        })
-                                    }
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                    <div className="flex justify-between py-4">
+                        <span>
+                            Circulating Supply
+                        </span>
+                        <span>
+                            {numberFormatter(coinsData?.market_data?.circulating_supply as number)}
+                        </span>
                     </div>
+                    <Accordion type="single" collapsible className="py-4">
+                        <AccordionItem value="Community" className="!border-b-0">
+                            <AccordionTrigger>
+                                <span>Source Code</span>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-x-1 space-y-1">
+                                {coinsData?.links?.repos_url?.github.length > 0 &&
+                                    coinsData.links.repos_url?.github.map((url: string, index: number) => {
+                                        const extractDomain = (url?: string) => {
+                                            try {
+                                                const hostname = new URL(url as string).hostname;
+                                                const domain = hostname.split('.').slice(-2, -1)[0];
+                                                return domain;
+                                            } catch (error) {
+                                                return null;
+                                            }
+                                        };
+                                        if (!url) return null;
+                                        const domain = extractDomain(url);
+                                        return (
+                                            <Link href={url} key={index} target="_blank" rel="noopener noreferrer" className={badgeVariants({ variant: "secondary" })}>
+                                                <span className="capitalize">
+                                                    {domain}
+                                                </span>
+                                            </Link>
+                                        );
+                                    })
+                                }
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </div>
-                <div className='col-span-12 lg:col-span-8 lg:px-6 py-6 lg:py-4 link'>
-                    <div className="col-span-12 mb-10">
-                        <CurrencyChart sparkline={coinsData.market_data?.sparkline_7d} priceChange={coinsData.market_data?.price_change_percentage_7d_in_currency?.usd} />
-                    </div>
-                    <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 capitalize">
-                        {`About ${coinsData?.name}?`}
-                    </h2>
-                    <p className="leading-7 [&:not(:first-child)]:mt-4"
-                        dangerouslySetInnerHTML={{ __html: coinsData?.description?.en }}>
-                    </p>
-                </div></>) : (<CoinsDetailSkeleton />)}
+            </div>
+            <div className='col-span-12 lg:col-span-8 lg:px-6 py-6 lg:py-4 link'>
+                <div className="col-span-12 mb-10">
+                    <CurrencyChart sparkline={coinsData.market_data?.sparkline_7d} priceChange={coinsData.market_data?.price_change_percentage_7d_in_currency?.usd} />
+                </div>
+                <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 capitalize">
+                    {`About ${coinsData?.name}?`}
+                </h2>
+                {coinsData?.description?.en ? (
+                    <p
+                        className="leading-7 [&:not(:first-child)]:mt-4"
+                        dangerouslySetInnerHTML={{ __html: coinsData.description.en }}
+                    />
+                ) : (
+                    <NoData />
+                )}
+
+            </div>
         </div>
     )
 }

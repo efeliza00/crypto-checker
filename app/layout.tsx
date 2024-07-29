@@ -5,6 +5,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Providers } from "@/lib/provider/query-provider";
 
+
 const poppins = Poppins({
   subsets: ["latin-ext"],
   weight: "300"

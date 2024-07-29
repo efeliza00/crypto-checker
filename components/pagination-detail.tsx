@@ -11,7 +11,6 @@ const PaginationDetails = ({ pageCountValue }: { pageCountValue: (count: number)
         pageCountValue(validatedPageCount);
     }
 
-    console.log
     return (
         <Pagination>
             <PaginationContent>
