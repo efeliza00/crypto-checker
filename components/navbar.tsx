@@ -1,11 +1,20 @@
 "use client"
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import classnames from "classnames"
 import { Menu, X } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
-const MobileNavbar = ({ isOpenNavbar }: { isOpenNavbar: boolean }) => {
+const MobileNavbar = ({ isOpenNavbar, setIsOpenNavbar }: {
+    isOpenNavbar: boolean;
+    setIsOpenNavbar: (isOpen: boolean) => void
+}) => {
+
+    const param = useParams()
+    useEffect(() => {
+        setIsOpenNavbar(false)
+    }, [param, setIsOpenNavbar])
 
     return <div className={`fixed w-full h-full -inset-2 z-40 bg-primary-foreground overflow-hidden md:hidden p-4 transition-transform duration-500 ${classnames({ "-translate-x-full pointer-events-none": !isOpenNavbar, "translate-x-0": isOpenNavbar })}`}>
         <ul className="flex-1 grid w-full px-6 py-4 mt-16 font-semibold text-2xl gap-10">
@@ -48,7 +57,7 @@ const Navbar = () => {
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </div>
-            <MobileNavbar isOpenNavbar={isOpenNavbar} />
+            <MobileNavbar isOpenNavbar={isOpenNavbar} setIsOpenNavbar={setIsOpenNavbar} />
         </div>
     )
 }
